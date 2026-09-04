@@ -12,14 +12,12 @@ public:
   float t0;
   float tf;
   float ts;
+  float nt_s;
   std::vector<float> x0;
 
   // Solution
   std::vector<float> t;
   std::vector<std::vector<float>> x;
 
-  Simulation();
-
-private:
-  std::vector<float> simulation_set_initial_conditions(void);
+  Simulation(std::vector<float> initialState);
 };

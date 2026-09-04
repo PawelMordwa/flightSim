@@ -10,6 +10,9 @@ project(FlightSim LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Allowing for CTest in this project
+enable_testing()
+
 add_library(flightsim_core STATIC
     src/model_equations.cpp
     src/numerical_integration.cpp
@@ -17,10 +20,11 @@ add_library(flightsim_core STATIC
     src/vehicle_model.cpp
 )
 
+
 # Definiujemy cel budowania (target) typu executable o nazwie
 # "flightsim", zlozony z podanych plikow zrodlowych.
 add_executable(flightsim
-    src/main.cpp
+src/main.cpp
 )
 
 
@@ -29,6 +33,7 @@ add_executable(flightsim
 # ze ta sciezka jest potrzebna tylko do zbudowania samego "flightsim",
 # nie eksportujemy jej dalej (nie ma tu innych targetow, ktore by z niej korzystaly).
 target_include_directories(flightsim_core PUBLIC include)
+add_subdirectory(tests)
 
 # Wlacz ostrzezenia kompilatora - pomagaja wylapac bledy typu
 # "unused variable" czy "sign-compare", ktore widzielismy wczesniej.

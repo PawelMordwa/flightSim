@@ -2,12 +2,27 @@
 #include "numerical_integration.hpp"
 #include "simulation_setup.hpp"
 #include "vehicle_model.hpp"
+#include <cmath>
 #include <fstream>
+#include <vector>
 
 int main(void) {
-  set_bowling_ball_model();
+  set_brick_model();
 
-  Simulation sim;
+  std::vector<float> initialState = {0.001,
+                                     0,
+                                     0,
+                                     10 * M_PI / 180,
+                                     20 * M_PI / 180,
+                                     30 * M_PI / 180,
+                                     0 * M_PI / 180,
+                                     0 * M_PI / 180,
+                                     0 * M_PI / 180,
+                                     0,
+                                     0,
+                                     -5000};
+
+  Simulation sim(initialState);
 
   forward_euler(sim);
 

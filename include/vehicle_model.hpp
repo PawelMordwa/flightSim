@@ -19,3 +19,5 @@ enum class ModelProperties {
 extern std::array<float, utils::to_idx(ModelProperties::Count)> eg_model;
 
 void set_bowling_ball_model();
+
+void set_brick_model();

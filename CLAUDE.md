@@ -22,7 +22,7 @@ Użytkownik jest początkujący w C++, ale doświadczony programistycznie (zna d
 
 ## Roadmapa (kolejne etapy, w tej kolejności wg rozmów z użytkownikiem)
 
-1. **Testy porównawcze z NASA 6-DOF benchmark sim** (https://nescacademy.nasa.gov/flightsim/2023) — walidacja poprawności portu względem oficjalnej referencji, nie tylko względem własnego Pythona.
+1. **Testy porównawcze z NASA 6-DOF benchmark sim** (https://ntrs.nasa.gov/citations/20150001263) — walidacja poprawności portu względem oficjalnej referencji, nie tylko względem własnego Pythona.
 2. **Wizualizacja wyników** — obecnie `main.cpp` pisze `sim_output.csv`; potrzebny sposób na wykresy (skrypt Python czytający CSV, albo coś natywnego w C++).
 3. **Testowanie flight controllerów** (przyszłość, jeszcze nieuszczegółowione).
 4. **Testowanie systemów nawigacji** (przyszłość, jeszcze nieuszczegółowione).

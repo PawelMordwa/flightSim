@@ -76,3 +76,6 @@ __pycache__/
 # Figures
 Python/fig/
 fig/
+
+#Claude
+CLAUDE.md
