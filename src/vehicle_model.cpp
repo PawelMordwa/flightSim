@@ -24,15 +24,27 @@ void set_bowling_ball_model() {
   eg_model[utils::to_idx(ModelProperties::Aref_m2)] = Aref_m2;
 }
 
-void set_brick_model() {
+void set_brick_model(bool with_dumping) {
   const float m_kg = 2.26796f;
   const float CD = 0.0f;
   const float Jxx_b_kgm2 = 0.0025680f;
   const float Jyy_b_kgm2 = 0.0084213f;
   const float Jzz_b_kgm2 = 0.0097545f;
   const float Jxz_b_kgm2 = 0.0f;
+  const float b_m = 0.1016f;
+  const float c_m = 0.2032f;
 
-  float Aref_m2 = 0; // insignificant since CD = 0
+  float Cl_p = -1.0f;
+  float Cm_q = -1.0f;
+  float Cn_r = -1.0f;
+
+  if (with_dumping == false) {
+    Cl_p = 0.0f;
+    Cm_q = 0.0f;
+    Cn_r = 0.0f;
+  }
+
+  float Aref_m2 = b_m * c_m;
 
   eg_model[utils::to_idx(ModelProperties::m_kg)] = m_kg;
   eg_model[utils::to_idx(ModelProperties::Jxx_b_kgm2)] = Jxx_b_kgm2;
@@ -41,4 +53,9 @@ void set_brick_model() {
   eg_model[utils::to_idx(ModelProperties::Jxz_b_kgm2)] = Jxz_b_kgm2;
   eg_model[utils::to_idx(ModelProperties::CD)] = CD;
   eg_model[utils::to_idx(ModelProperties::Aref_m2)] = Aref_m2;
+  eg_model[utils::to_idx(ModelProperties::b_m)] = b_m;
+  eg_model[utils::to_idx(ModelProperties::c_m)] = c_m;
+  eg_model[utils::to_idx(ModelProperties::Cl_p)] = Cl_p;
+  eg_model[utils::to_idx(ModelProperties::Cm_q)] = Cm_q;
+  eg_model[utils::to_idx(ModelProperties::Cn_r)] = Cn_r;
 }

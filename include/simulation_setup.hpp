@@ -19,5 +19,7 @@ public:
   std::vector<float> t;
   std::vector<std::vector<float>> x;
 
-  Simulation(std::vector<float> initialState);
+  // tf_s ma wartosc domyslna, wiec stare wywolania Simulation(x0) nadal dzialaja.
+  // Wartosc domyslna podaje sie TYLKO w deklaracji, nie w definicji.
+  Simulation(std::vector<float> initialState, float tf_s = 50.0f);
 };

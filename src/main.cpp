@@ -7,9 +7,11 @@
 #include <vector>
 
 int main(void) {
-  set_brick_model();
+  set_brick_model(true);
 
-  std::vector<float> initialState = {0.001,
+  // Scenariusz NASA check-case 3: start z 30 000 ft = 9144 m, zerowa predkosc
+  // liniowa, predkosci katowe 10/20/30 deg/s wzgledem ukladu inercjalnego.
+  std::vector<float> initialState = {0,
                                      0,
                                      0,
                                      10 * M_PI / 180,
@@ -20,9 +22,9 @@ int main(void) {
                                      0 * M_PI / 180,
                                      0,
                                      0,
-                                     -5000};
+                                     -9144.0};
 
-  Simulation sim(initialState);
+  Simulation sim(initialState, 30.0f);
 
   forward_euler(sim);
 

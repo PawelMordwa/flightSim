@@ -7,7 +7,7 @@
 
 bool dragless_tumbling_brick() {
 
-  set_brick_model();
+  set_brick_model(false);
   std::vector<float> initialState = {0,
                                      0,
                                      0,

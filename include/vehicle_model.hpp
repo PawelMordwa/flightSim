@@ -12,12 +12,17 @@ enum class ModelProperties {
   Jzz_b_kgm2,
   CD,
   Aref_m2,
+  b_m,
+  c_m,
+  Cl_p,
+  Cm_q,
+  Cn_r,
 
-  Count
+  Count,
 };
 
 extern std::array<float, utils::to_idx(ModelProperties::Count)> eg_model;
 
 void set_bowling_ball_model();
 
-void set_brick_model();
+void set_brick_model(bool with_dumping);

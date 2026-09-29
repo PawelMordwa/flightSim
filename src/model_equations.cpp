@@ -39,6 +39,13 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float Jxx_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jxx_b_kgm2)];
   float Jyy_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jyy_b_kgm2)];
   float Jzz_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jzz_b_kgm2)];
+  float CD = eg_model[utils::to_idx(ModelProperties::CD)];
+  float Aref_m2 = eg_model[utils::to_idx(ModelProperties::Aref_m2)];
+  float b_m = eg_model[utils::to_idx(ModelProperties::b_m)];
+  float c_m = eg_model[utils::to_idx(ModelProperties::c_m)];
+  float Cl_p = eg_model[utils::to_idx(ModelProperties::Cl_p)];
+  float Cm_q = eg_model[utils::to_idx(ModelProperties::Cm_q)];
+  float Cn_r = eg_model[utils::to_idx(ModelProperties::Cn_r)];
 
   // Altitude
   float h_m = -pz_n_m;
@@ -49,7 +56,7 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   // Air data
   float airspeed = std::sqrt(std::pow(u_b_mps, 2) + std::pow(v_b_mps, 2) +
                              std::pow(w_b_mps, 2));
-  float dynamic_preasure = 0.5 * rho_m * std::pow(airspeed, 2);
+  float q_bar = 0.5 * rho_m * std::pow(airspeed, 2);
 
   float v_over_VT = 0;
 
@@ -73,9 +80,7 @@ std::vector<float> model_equations(const std::vector<float> &x) {
 
   // Aerodynamic forces
 
-  float drag_N = eg_model[utils::to_idx(ModelProperties::CD)] *
-                 dynamic_preasure *
-                 eg_model[utils::to_idx(ModelProperties::Aref_m2)];
+  float drag_N = CD * q_bar * Aref_m2;
   float side_N = 0;
   float lift_N = 0;
 
@@ -90,6 +95,16 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float L_b_Nm = 0;
   float M_b_Nm = 0;
   float N_b_Nm = 0;
+
+  if (airspeed != 0) {
+    float p_hat = p_b_rps * b_m / (2 * airspeed);
+    float q_hat = q_b_rps * c_m / (2 * airspeed);
+    float r_hat = r_b_rps * b_m / (2 * airspeed);
+
+    L_b_Nm = Cl_p * p_hat * q_bar * Aref_m2 * b_m;
+    M_b_Nm = Cm_q * q_hat * q_bar * Aref_m2 * c_m;
+    N_b_Nm = Cn_r * r_hat * q_bar * Aref_m2 * b_m;
+  }
 
   // Denominator in roll and yaw rate equations
   float den = Jxx_b_kgm2 * Jzz_b_kgm2 - std::pow(Jxz_b_kgm2, 2);

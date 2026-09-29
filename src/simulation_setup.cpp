@@ -1,9 +1,9 @@
 #include "simulation_setup.hpp"
 #include <cmath>
 
-Simulation::Simulation(std::vector<float> initialState) {
+Simulation::Simulation(std::vector<float> initialState, float tf_s) {
   t0 = 0;
-  tf = 50;
+  tf = tf_s;
   ts = 0.005;
 
   x0 = initialState;
