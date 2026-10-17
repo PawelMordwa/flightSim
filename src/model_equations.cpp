@@ -1,4 +1,5 @@
 #include "model_equations.hpp"
+#include "aerodynamics.hpp"
 #include "atmosphere.hpp"
 #include "phisical_properties.hpp"
 #include "vehicle_model.hpp"
@@ -20,8 +21,8 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float phi_rad = x.at(6);
   float theta_rad = x.at(7);
   float psi_rad = x.at(8);
-  float px_n_m = x.at(9);
-  float py_n_m = x.at(10);
+  [[maybe_unused]] float px_n_m = x.at(9);
+  [[maybe_unused]] float py_n_m = x.at(10);
   float pz_n_m = x.at(11);
 
   // Euler angles trigonometric functions
@@ -40,6 +41,8 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float Jyy_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jyy_b_kgm2)];
   float Jzz_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jzz_b_kgm2)];
   float CD = eg_model[utils::to_idx(ModelProperties::CD)];
+  float CL = eg_model[utils::to_idx(ModelProperties::CL)];
+  float CY = eg_model[utils::to_idx(ModelProperties::CY)];
   float Aref_m2 = eg_model[utils::to_idx(ModelProperties::Aref_m2)];
   float b_m = eg_model[utils::to_idx(ModelProperties::b_m)];
   float c_m = eg_model[utils::to_idx(ModelProperties::c_m)];
@@ -66,30 +69,19 @@ std::vector<float> model_equations(const std::vector<float> &x) {
 
   float alpha_rad = std::atan2(w_b_mps, u_b_mps);
   float beta_rad = std::asin(v_over_VT);
-  float s_alpha = std::sin(alpha_rad);
-  float c_alpha = std::cos(alpha_rad);
-  float s_beta = std::sin(beta_rad);
-  float c_beta = std::cos(beta_rad);
 
   // Gravity in body cordinate system
+
   float gz_n_mps2 = phisical_properies::g;
 
   float gx_b_mps2 = -std::sin(theta_rad) * gz_n_mps2;
   float gy_b_mps2 = std::sin(phi_rad) * std::cos(theta_rad) * gz_n_mps2;
   float gz_b_mps2 = std::cos(phi_rad) * std::cos(theta_rad) * gz_n_mps2;
 
-  // Aerodynamic forces
-
-  float drag_N = CD * q_bar * Aref_m2;
-  float side_N = 0;
-  float lift_N = 0;
-
   // External forces
-  float Fx_b_N = -(c_alpha * c_beta * drag_N - c_alpha * s_beta * side_N -
-                   s_alpha * lift_N);
-  float Fy_b_N = -(s_beta * drag_N + c_beta * side_N);
-  float Fz_b_N = -(s_alpha * c_beta * drag_N - s_alpha * s_beta * side_N +
-                   c_alpha * lift_N);
+
+  BodyForces f = wind_to_body(aero_forces(q_bar, Aref_m2, CD, CY, CL),
+                              alpha_rad, beta_rad);
 
   // External moments
   float L_b_Nm = 0;
@@ -111,11 +103,11 @@ std::vector<float> model_equations(const std::vector<float> &x) {
 
   // Translational equations
   dx[0] =
-      1.0f / m_kg * Fx_b_N + gx_b_mps2 - w_b_mps * q_b_rps + v_b_mps * r_b_rps;
+      1.0f / m_kg * f.Fx_N + gx_b_mps2 - w_b_mps * q_b_rps + v_b_mps * r_b_rps;
   dx[1] =
-      1.0f / m_kg * Fy_b_N + gy_b_mps2 - u_b_mps * r_b_rps + w_b_mps * p_b_rps;
+      1.0f / m_kg * f.Fy_N + gy_b_mps2 - u_b_mps * r_b_rps + w_b_mps * p_b_rps;
   dx[2] =
-      1.0f / m_kg * Fz_b_N + gz_b_mps2 - v_b_mps * p_b_rps + u_b_mps * q_b_rps;
+      1.0f / m_kg * f.Fz_N + gz_b_mps2 - v_b_mps * p_b_rps + u_b_mps * q_b_rps;
 
   // Rotational equations
 

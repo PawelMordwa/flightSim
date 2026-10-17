@@ -18,6 +18,7 @@ add_library(flightsim_core STATIC
     src/numerical_integration.cpp
     src/simulation_setup.cpp
     src/vehicle_model.cpp
+    src/aerodynamics.cpp
 )
 
 

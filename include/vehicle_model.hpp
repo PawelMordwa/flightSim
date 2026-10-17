@@ -11,6 +11,8 @@ enum class ModelProperties {
   Jyy_b_kgm2,
   Jzz_b_kgm2,
   CD,
+  CL,
+  CY,
   Aref_m2,
   b_m,
   c_m,

@@ -5,9 +5,11 @@
 #include <iostream>
 #include <type_traits>
 
-std::array<float, utils::to_idx(ModelProperties::Count)> eg_model{{0}};
+std::array<float, utils::to_idx(ModelProperties::Count)> eg_model{{}};
 
 void set_bowling_ball_model() {
+  eg_model.fill(0.0f);
+
   const float m_kg = 6.0f;
   const float CD = 0.47f;
   const float r_m = 0.1085f;
@@ -25,6 +27,8 @@ void set_bowling_ball_model() {
 }
 
 void set_brick_model(bool with_dumping) {
+  eg_model.fill(0.0f);
+
   const float m_kg = 2.26796f;
   const float CD = 0.0f;
   const float Jxx_b_kgm2 = 0.0025680f;
