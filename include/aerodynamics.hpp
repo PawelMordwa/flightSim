@@ -1,3 +1,5 @@
+#pragma once
+
 struct AeroForces {
   float drag_N;
   float side_N;

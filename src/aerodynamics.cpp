@@ -7,7 +7,7 @@ AeroForces aero_forces(float q_bar, float Aref_m2, float CD, float CY,
   AeroForces f = {};
 
   f.drag_N = CD * q_bar * Aref_m2;
-  f.side_N = CY * q_bar * Aref_m2;
+  f.side_N = -CY * q_bar * Aref_m2;
   f.lift_N = CL * q_bar * Aref_m2;
 
   return f;
