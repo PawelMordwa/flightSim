@@ -40,15 +40,9 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float Jxx_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jxx_b_kgm2)];
   float Jyy_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jyy_b_kgm2)];
   float Jzz_b_kgm2 = eg_model[utils::to_idx(ModelProperties::Jzz_b_kgm2)];
-  float CD = eg_model[utils::to_idx(ModelProperties::CD)];
-  float CL = eg_model[utils::to_idx(ModelProperties::CL)];
-  float CY = eg_model[utils::to_idx(ModelProperties::CY)];
   float Aref_m2 = eg_model[utils::to_idx(ModelProperties::Aref_m2)];
   float b_m = eg_model[utils::to_idx(ModelProperties::b_m)];
   float c_m = eg_model[utils::to_idx(ModelProperties::c_m)];
-  float Cl_p = eg_model[utils::to_idx(ModelProperties::Cl_p)];
-  float Cm_q = eg_model[utils::to_idx(ModelProperties::Cm_q)];
-  float Cn_r = eg_model[utils::to_idx(ModelProperties::Cn_r)];
 
   // Altitude
   float h_m = -pz_n_m;
@@ -78,25 +72,32 @@ std::vector<float> model_equations(const std::vector<float> &x) {
   float gy_b_mps2 = std::sin(phi_rad) * std::cos(theta_rad) * gz_n_mps2;
   float gz_b_mps2 = std::cos(phi_rad) * std::cos(theta_rad) * gz_n_mps2;
 
-  // External forces
-
-  BodyForces f = wind_to_body(aero_forces(q_bar, Aref_m2, CD, CY, CL),
-                              alpha_rad, beta_rad);
-
-  // External moments
-  float L_b_Nm = 0;
-  float M_b_Nm = 0;
-  float N_b_Nm = 0;
+  // Dimensionless angular rates (zero when airspeed is zero, q_bar is zero
+  // then as well, so all aerodynamic loads vanish anyway)
+  float p_hat = 0;
+  float q_hat = 0;
+  float r_hat = 0;
 
   if (airspeed != 0) {
-    float p_hat = p_b_rps * b_m / (2 * airspeed);
-    float q_hat = q_b_rps * c_m / (2 * airspeed);
-    float r_hat = r_b_rps * b_m / (2 * airspeed);
-
-    L_b_Nm = Cl_p * p_hat * q_bar * Aref_m2 * b_m;
-    M_b_Nm = Cm_q * q_hat * q_bar * Aref_m2 * c_m;
-    N_b_Nm = Cn_r * r_hat * q_bar * Aref_m2 * b_m;
+    p_hat = p_b_rps * b_m / (2 * airspeed);
+    q_hat = q_b_rps * c_m / (2 * airspeed);
+    r_hat = r_b_rps * b_m / (2 * airspeed);
   }
+
+  // Aerodynamic coefficients as linear functions of alpha, beta and rates
+  AeroCoeficients coef = aero_coeficients(eg_aero_model, alpha_rad, beta_rad,
+                                          p_hat, q_hat, r_hat);
+
+  // External forces
+  BodyForces f =
+      wind_to_body(aero_forces(q_bar, Aref_m2, coef.CD, coef.CY, coef.CL),
+                   alpha_rad, beta_rad);
+
+  // External moments
+  BodyMoments moments = external_moments(coef, eg_model, q_bar);
+  float L_b_Nm = moments.L_b_Nm;
+  float M_b_Nm = moments.M_b_Nm;
+  float N_b_Nm = moments.N_b_Nm;
 
   // Denominator in roll and yaw rate equations
   float den = Jxx_b_kgm2 * Jzz_b_kgm2 - std::pow(Jxz_b_kgm2, 2);
